@@ -1,0 +1,7 @@
+all:
+  hosts:
+  children:
+    ios:
+      hosts:
+        router.cisco.example:
+          ansible_user: cisco

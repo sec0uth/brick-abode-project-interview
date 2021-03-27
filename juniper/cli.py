@@ -1,5 +1,6 @@
 from jnpr.junos import Device
 from jnpr.junos import utils
+from jnpr.junos.op.routes import RouteTable
 
 
 def get_machine_info(facts):
@@ -34,7 +35,7 @@ def get_basic_routing_table(dev):
         if len(route_entries) > 12:
             via = route_entries[-2].text
         else:
-            via = route_entries[9].text
+            via = route_entries[10].text
 
         routes.append(via)
         routes.append(route_entries[-1].text)
@@ -43,6 +44,27 @@ def get_basic_routing_table(dev):
                   for route in routes]
 
         columns.append(routes)
+
+    print(mask.format(*headers))
+    for routes in columns:
+        print(mask.format(*routes))
+
+
+def get_routing_table_the_right_way(dev):
+    rt_table = RouteTable(dev).get()
+
+    mask = '{:<12} {:<10} {:<8}'
+    headers = ['To', 'Via', 'Interface']
+    columns = []
+    
+    for route, meta in rt_table.items():
+        rt_meta = dict(meta)
+        if rt_meta['protocol'] in ['INET6']:
+            continue
+
+        columns.append([route,
+                        rt_meta['nexthop'] or 'None',
+                        rt_meta['via']])
 
     print(mask.format(*headers))
     for routes in columns:
@@ -59,3 +81,5 @@ with device() as jnpr_dev:
     get_machine_info(facts)
     get_up_time(facts)
     get_basic_routing_table(jnpr_dev)
+    
+    get_routing_table_the_right_way(jnpr_dev)

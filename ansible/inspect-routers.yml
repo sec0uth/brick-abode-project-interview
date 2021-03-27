@@ -19,5 +19,5 @@
 
     - name: show remote host interfaces status
       ansible.builtin.debug:
-        msg: "{{ item }} {{ ansible_net_interfaces[item].operstatus }} {{ ansible_net_interfaces[item].ipv4[0].address }}"
+        msg: "{{ item }} addr {{ ansible_net_interfaces[item].ipv4[0].address }} is {{ ansible_net_interfaces[item].operstatus }}"
       with_items: "{{ ansible_net_interfaces }}"

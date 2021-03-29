@@ -8,6 +8,6 @@ services:
     volumes:
       - ./juniper:/juniper:Z,ro
       - ~/.ssh/config:/root/.ssh/config:Z,ro
-      
+
     ## ssh public key authentication
     #  - ~/.ssh/juniper_key:/root/.ssh/id_rsa:Z,ro

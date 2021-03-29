@@ -1,24 +1,30 @@
 #!/bin/sh
 set -e
 
-# store directory with source files
-data_source="$JUNIPER_DEV_SOURCE"
-
-# ensure exists
-if [ -z "$data_source" ]; then
-    echo "[-] missing data source"
+# enforces file existence
+if [ ! -e requirements.txt ] \
+    || [ ! -e cli.py ]; then
+    echo "[-] missing data source: requirements.txt and cli.py"
     exit 1
 fi
 
-if [ ! -e "$data_source" ]; then
-    echo "[-] no such data source directory: $data_source"
-    exit 2
+# has key?
+if [ -e ~/.ssh/id_rsa ]; then
+    # create ssh agent and 
+    SSH_AUTH_SOCK="$(mktemp)"
+    ssh-agent
+
+    # add key to agent
+    ssh-add ~/.ssh/id_rsa
 fi
 
 # update pip
 pip3 install -U pip
 
-# make dependencies install.
-pushd "$data_source"
+cd "$data_source"
+
+# make dependencies install
 pip3 install -r requirements.txt
-popd
+
+# test stuff
+python3 cli.py

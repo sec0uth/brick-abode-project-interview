@@ -177,3 +177,7 @@ pip-selfcheck.json
 
 ### custom ansible testing inventory
 ansible/testing-inventory/
+ansible/ansible.cfg
+
+### custom compose dev
+docker-compose.yaml

@@ -2,8 +2,7 @@ version: "3.8"
 
 services:
   juniper-dev:
-    build:
-      dockerfile: ./juniper/
+    build: ./juniper/
     working_dir: /juniper/
     volumes:
       - ./juniper:/juniper:Z,ro
@@ -11,3 +10,12 @@ services:
 
     ## ssh public key authentication
     #  - ~/.ssh/juniper_key:/root/.ssh/id_rsa:Z,ro
+
+  ansible-dev:
+    build: ./ansible/
+    working_dir: /ansible/
+    volumes:
+      - ./ansible:/ansible:Z,ro
+
+    ## ssh public key authentication
+    #  - ~/.ssh/ansible_key:/root/.ssh/id_rsa:Z,ro

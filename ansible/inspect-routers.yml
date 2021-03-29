@@ -1,0 +1,23 @@
+# Connects to `ios` hosts group and gather information
+
+- hosts: ios
+  gather_facts: false
+
+  tasks:
+    - name: gather minimal resources information
+      ios_facts:
+        gather_subset: all
+
+    - name: show remote host information
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      with_items:
+        - 'IOS: {{ ansible_net_iostype }}'
+        - 'Model: {{ ansible_net_model }}'
+        - 'Version: {{ ansible_net_version }}'
+        - 'Name: {{ ansible_net_hostname }}'
+
+    - name: show remote host interfaces status
+      ansible.builtin.debug:
+        msg: "{{ item }} addr {{ ansible_net_interfaces[item].ipv4[0].address }} is {{ ansible_net_interfaces[item].operstatus }}"
+      with_items: "{{ ansible_net_interfaces }}"

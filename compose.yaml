@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  juniper-dev:
+    image: localhost/juniperdev
+    volumes:
+      - ./juniper:/juniper/:Z,ro
+    environment:
+      JUNIPER_DEV_SOURCE=/juniper/

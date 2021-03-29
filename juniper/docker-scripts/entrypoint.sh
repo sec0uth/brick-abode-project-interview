@@ -10,9 +10,8 @@ fi
 
 # has key?
 if [ -e ~/.ssh/id_rsa ]; then
-    # create ssh agent and 
-    SSH_AUTH_SOCK="$(mktemp)"
-    ssh-agent
+    # create ssh agent and export agent environment variables
+    eval "$(ssh-agent)"
 
     # add key to agent
     ssh-add ~/.ssh/id_rsa

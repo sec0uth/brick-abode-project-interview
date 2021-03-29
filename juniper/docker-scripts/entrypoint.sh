@@ -21,8 +21,6 @@ fi
 # update pip
 pip3 install -U pip
 
-cd "$data_source"
-
 # make dependencies install
 pip3 install -r requirements.txt
 

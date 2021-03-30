@@ -1,0 +1,26 @@
+## template configuration file
+
+logging:
+  verbose: true
+  console: true
+  file: null
+
+ssh:
+  config: ~/.ssh/config
+  host: foo
+  passwd: 1234
+  ask_passwd: false
+
+changes:
+  banner: "!!!!! This is the new awesome banner !!!!!"
+  banner_file: null
+
+  user:
+    name: little-juno
+    passwd: 1234
+    ask_passwd: false
+
+  config: |
+        set foo bar
+  config_file: null
+

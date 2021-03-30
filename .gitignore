@@ -181,3 +181,6 @@ ansible/ansible.cfg
 
 ### custom compose dev
 docker-compose.yaml
+
+### custom development virtualenv
+dev-venv/

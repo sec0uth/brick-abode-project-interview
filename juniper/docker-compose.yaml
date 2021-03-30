@@ -1,0 +1,17 @@
+version: "2"
+
+services:
+  prod:
+    build: ./juniper/
+    working_dir: /juniper/
+    volumes:
+      - ./juniper:/juniper:Z,ro
+
+  dev:
+    build:
+      dockerfile: ./juniper/Dockerfile.dev
+    working_dir: /project/
+    volumes:
+      - ./juniper:/project/juniper:Z,ro
+      - ./tests:/project/tests:Z,ro
+      - ./tox.ini:/project/tox.ini:Z,ro

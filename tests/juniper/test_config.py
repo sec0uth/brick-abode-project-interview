@@ -12,7 +12,7 @@ from juniper import config
 def test_read_from_file(cfg_template):
     """Read yaml file and return a dict."""
     result = config.read(cfg_template)
-    assert type(result) is dict
+    assert isinstance(result, dict)
 
 
 def test_succeed_to_validate_required_fields(monkeypatch, 

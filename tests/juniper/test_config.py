@@ -14,7 +14,9 @@ def test_read_from_file(cfg_template):
     assert type(result) is dict
 
 
-def test_succeed_to_validate_required_fields(monkeypatch, tmp_path):
+def test_succeed_to_validate_required_fields(monkeypatch, 
+                                             tmp_path,
+                                             mock_factory):
     """Succeeds to read valid yaml configurations."""
     # create dummy file in temporary dir
     dummy_file = tmp_path / Path('bar.foo')
@@ -72,11 +74,8 @@ def test_succeed_to_validate_required_fields(monkeypatch, tmp_path):
                        dataset_v2,
                        dataset_v3,]
 
-    def yaml_load_patch(*_, **__):
-        return datasets_to_ret.pop()
-
-    # patch yaml to return expected
-    monkeypatch.setattr(yaml, 'load', yaml_load_patch)
+    # patch yaml to return each dataset at time
+    monkeypatch.setattr(yaml, 'load', mock_factory(datasets_to_ret))
 
     # loop the size of the datasets and 
     # validate the dataset input
@@ -85,3 +84,31 @@ def test_succeed_to_validate_required_fields(monkeypatch, tmp_path):
             config.read(dummy_file)
         except:
             pytest.fail()
+
+
+def test_fail_validate_without_any_required_fields(monkeypatch, 
+                                                   tmp_path,
+                                                   mock_factory):
+    """Fail to read config with missing required fields."""
+    expected_fields = ['ssh.host', 
+                       'changes.user.name', 
+                       'changes.banner',
+                       'changes.config',]
+
+     # empty
+    dataset = {}
+
+    # patch yaml to return expected
+    monkeypatch.setattr(yaml, 'load', mock_factory(dataset))
+
+    # create dummy file in temporary dir
+    dummy_file = tmp_path / Path('bar.foo')
+    dummy_file.write_bytes(b'')
+
+    with pytest.raises(config.ErrorBag) as exc_manager:
+        config.read(dummy_file)
+
+    missing_fields = exc_manager.value().keys 
+
+    assert missing_fields == expected_fields
+

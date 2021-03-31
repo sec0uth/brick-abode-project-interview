@@ -1,10 +1,11 @@
 """Test `juniper.config` module."""
 
 
-import yaml
 from pathlib import Path
 
 import pytest
+import yaml
+
 from juniper import config
 
 
@@ -60,22 +61,43 @@ def test_succeed_to_validate_required_fields(monkeypatch,
             'host': 'foo',
         },
         'changes': {
-            'banner_file': 'something',
+            'banner': 'something',
 
             'user': {
                 'name': 'bar',
             },
 
-            'config': dummy_file.name,
+            'config_file': dummy_file.name,
+        },
+    }
+
+    # with `config_file` and `banner_file`
+    dataset_v4 = {
+        'ssh': {
+            'host': 'foo',
+        },
+        'changes': {
+            'banner_file': dummy_file.name,
+
+            'user': {
+                'name': 'bar',
+            },
+
+            'config_file': dummy_file.name,
         },
     }
 
     datasets_to_ret = [dataset_v1,
                        dataset_v2,
-                       dataset_v3,]
+                       dataset_v3,
+                       dataset_v4,]
+
+    # `side_effect` instruct the mock to return one
+    # element of `datasets_to_ret` each time is called
+    patch_fn = mock_factory(side_effect=datasets_to_ret)
 
     # patch yaml to return each dataset at time
-    monkeypatch.setattr(yaml, 'load', mock_factory(datasets_to_ret))
+    monkeypatch.setattr(yaml, 'load', patch_fn)
 
     # loop the size of the datasets and 
     # validate the dataset input
@@ -98,8 +120,10 @@ def test_fail_validate_without_any_required_fields(monkeypatch,
      # empty
     dataset = {}
 
+    patch_fn = mock_factory(return_value=dataset)
+
     # patch yaml to return expected
-    monkeypatch.setattr(yaml, 'load', mock_factory(dataset))
+    monkeypatch.setattr(yaml, 'load', patch_fn)
 
     # create dummy file in temporary dir
     dummy_file = tmp_path / Path('bar.foo')
@@ -108,7 +132,7 @@ def test_fail_validate_without_any_required_fields(monkeypatch,
     with pytest.raises(config.ErrorBag) as exc_manager:
         config.read(dummy_file)
 
-    missing_fields = exc_manager.value().keys 
+    missing_fields = exc_manager.value.keys 
 
     assert missing_fields == expected_fields
 

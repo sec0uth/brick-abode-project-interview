@@ -1,85 +1,25 @@
-from jnpr.junos import Device
-from jnpr.junos import utils
-from jnpr.junos.op.routes import RouteTable
+"""Interface functions for starting the application."""
+
+import sys
+import os
 
 
-def get_machine_info(facts):
-    print(f'Version: {facts.get("version")}')
-    print(f'Model: {facts.get("model")}')
-    print(f'Name: {facts.get("fqdn")}')
+# environment variable of configuration file
+CONFIG_ENV_NAME = 'JNPR_CONFIG_FILE'
 
 
-def get_up_time(facts):
-    re0 = facts.get('RE0')
+def deduce_config_file() -> str:
+    """Return file path of configuration file when any."""
+    if len(sys.argv) > 1:
+        return sys.argv[1]
 
-    if re0 is not None:
-        print(f'Uptime: {re0.get("up_time")}')
+    config_file = os.getenv(CONFIG_ENV_NAME)
+    if not config_file:
+        raise TypeError('Missing configuration file parameter.')
 
-
-def get_basic_routing_table(dev):
-    route_info = dev.rpc.get_route_information()
-    entries = (list(el.getiterator()) for el in route_info.getiterator()
-                if el.tag == 'rt')
-
-    mask = '{:<12} {:<10} {:<8}'
-    headers = ['To', 'Via', 'Interface']
-    columns = []
-
-    for route_entries in entries:
-        rt_type = route_entries[6].text
-        if rt_type in ['INET6']:
-            continue
-
-        routes = [route_entries[1].text]
-
-        if len(route_entries) > 12:
-            via = route_entries[-2].text
-        else:
-            via = route_entries[10].text
-
-        routes.append(via)
-        routes.append(route_entries[-1].text)
-
-        routes = ['None' if route is None else route
-                  for route in routes]
-
-        columns.append(routes)
-
-    print(mask.format(*headers))
-    for routes in columns:
-        print(mask.format(*routes))
+    return config_file
 
 
-def get_routing_table_the_right_way(dev):
-    rt_table = RouteTable(dev).get()
-
-    mask = '{:<12} {:<10} {:<8}'
-    headers = ['To', 'Via', 'Interface']
-    columns = []
-    
-    for route, meta in rt_table.items():
-        rt_meta = dict(meta)
-        if rt_meta['protocol'] in ['INET6']:
-            continue
-
-        columns.append([route,
-                        rt_meta['nexthop'] or 'None',
-                        rt_meta['via']])
-
-    print(mask.format(*headers))
-    for routes in columns:
-        print(mask.format(*routes))
-
-
-def device():
-    return Device(host='juniper', port=22)
-
-
-with device() as jnpr_dev:
-    facts = jnpr_dev.facts
-
-    get_machine_info(facts)
-    get_up_time(facts)
-    get_basic_routing_table(jnpr_dev)
-    
-    get_routing_table_the_right_way(jnpr_dev)
+def main():
+    """Entrypoint for script interaction."""
+    pass

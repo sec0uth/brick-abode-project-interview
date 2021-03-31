@@ -1,8 +1,9 @@
 """Interface functions for starting the application."""
 
-import sys
 import os
+import sys
 
+from jnpr.junos import Device
 
 # environment variable of configuration file
 CONFIG_ENV_NAME = 'JNPR_CONFIG_FILE'
@@ -23,3 +24,16 @@ def deduce_config_file() -> str:
 def main():
     """Entrypoint for script interaction."""
     pass
+
+
+def make_device(config: dict) -> Device:
+    """Return a juniper device from configuration."""
+    ssh_cfg = config['ssh']
+
+    kwargs = {
+        'host': ssh_cfg['host'],
+        'ssh_config': ssh_cfg.get('config'),
+        'port': 22,
+    }
+
+    return Device(**kwargs)

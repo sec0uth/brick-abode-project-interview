@@ -1,8 +1,8 @@
 """Configure global fixtures."""
 
 
-import os
 import contextlib
+import os
 from unittest.mock import Mock
 
 import pytest
@@ -16,7 +16,7 @@ def mock_factory() -> Mock:
 
 
 @pytest.fixture
-def ctx_manager_factory() -> Mock:
+def ctx_manager_factory() -> contextlib.AbstractContextManager:
     """
     Return a factory to `with` statement context managers.
 

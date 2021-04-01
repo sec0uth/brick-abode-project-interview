@@ -3,11 +3,11 @@
 
 from typing import List
 
-from . import abc
+from . import abc, ssh_passwd
 
 # hold default tasks allowed to run.
 registered_ones = [
-
+    ssh_passwd.SSHPassword,
 ]
 
 

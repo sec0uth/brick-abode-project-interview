@@ -2,6 +2,7 @@
 
 
 import contextlib
+import getpass
 import os
 from unittest.mock import Mock
 
@@ -45,3 +46,15 @@ def cfg_template() -> str:
     return os.path.join(base_dir,
                         'assets',
                         'cfg_template.yaml')
+
+
+@pytest.fixture
+def getpass_mock(monkeypatch, mock_factory) -> Mock:
+    """Patch `getpass.getpass` module."""
+    getpass_mock = mock_factory()
+
+    monkeypatch.setattr(getpass, 
+                        'getpass',
+                        getpass_mock)
+
+    return getpass_mock

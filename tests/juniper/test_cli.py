@@ -8,7 +8,6 @@ import pytest
 
 from juniper import cli, task
 
-
 ## deduce_config_file()
 #################################
 

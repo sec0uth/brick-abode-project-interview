@@ -35,7 +35,7 @@ def main():
     task_store = []
 
     # create a config copy for tasks classes
-    task_config = configuration['changes'].copy()
+    task_config = configuration.copy()
 
     # setup tasks
     for task_class in task.load_list():
@@ -48,9 +48,10 @@ def main():
         # save it
         task_store.append(task_obj)
 
-    # run each task
-    for task_obj in task_store:
-        task_obj.run()
+    # run each task with device connected
+    with juno_dev:
+        for task_obj in task_store:
+            task_obj.run()
 
 
 def make_device(config: dict) -> Device:

@@ -90,13 +90,14 @@ def test_use_device_with_default_settings(tmp_path):
 
 def test_run_registered_tasks_methods_in_order(monkeypatch, 
                                                mock_factory, 
-                                               cfg_template):
+                                               cfg_template,
+                                               ctx_manager_factory):
     """Call tasks simulating a script call."""
     # patch script arguments with a template configuration
     monkeypatch.setattr(sys, 'argv', [None, cfg_template])
 
     # fake device
-    monkeypatch.setattr(cli, 'make_device', mock_factory)
+    monkeypatch.setattr(cli, 'make_device', ctx_manager_factory)
 
     # keep object to make assertions
     mock_task = mock_factory()

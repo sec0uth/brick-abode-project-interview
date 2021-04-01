@@ -3,7 +3,7 @@
 
 from typing import List
 
-from . import abc, ssh_passwd, banner
+from . import abc, banner, ssh_passwd
 
 # hold default tasks allowed to run.
 registered_ones = [

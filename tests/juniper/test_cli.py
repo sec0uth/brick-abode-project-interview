@@ -8,34 +8,46 @@ import pytest
 
 from juniper import cli, task
 
+
+@pytest.fixture
+def script_factory(monkeypatch) -> callable:
+    """Patch `sys.argv` to mimic script arguments."""
+    def factory(*args) -> None:
+        monkeypatch.setattr(sys, 'argv', ['fake-script', *args])
+
+    return factory
+
+
 ## deduce_config_file()
 #################################
 
 
-def test_get_config_file_takes_sys_argv_first(monkeypatch):
+def test_get_config_file_takes_sys_argv_first(script_factory):
     """Read config file from script arguments event when has environment variable."""
     expected = 'foo.sys.first'
 
     os.environ[cli.CONFIG_ENV_NAME] = 'foo.env'
-    monkeypatch.setattr(sys, 'argv', [None, expected])
+
+    # set script argument
+    script_factory(expected)
 
     result = cli.deduce_config_file()
 
     assert result == expected
 
 
-def test_get_config_file_from_sys_argv(monkeypatch):
+def test_get_config_file_from_sys_argv(script_factory):
     """Read the first script argument as the config file."""
     expected = 'foo.sys'
 
-    monkeypatch.setattr(sys, 'argv', [None, expected])
+    script_factory(expected)
 
     result = cli.deduce_config_file()
 
     assert result == expected
 
 
-def test_get_config_file_from_env_variable(monkeypatch):
+def test_get_config_file_from_env_variable():
     """Read the config file from environment variable."""
     expected = 'foo.env'
 
@@ -46,12 +58,13 @@ def test_get_config_file_from_env_variable(monkeypatch):
     assert result == expected
 
 
-def test_fail_to_get_config_file(monkeypatch):
+def test_fail_to_get_config_file(script_factory):
     """Fail to read the config file."""
     if os.getenv(cli.CONFIG_ENV_NAME):
         del os.environ[cli.CONFIG_ENV_NAME]
 
-    monkeypatch.setattr(sys, 'argv', [])
+    # unset script parameters
+    script_factory()
 
     with pytest.raises(TypeError):
         cli.deduce_config_file()
@@ -90,10 +103,11 @@ def test_use_device_with_default_settings(tmp_path):
 def test_run_registered_tasks_methods_in_order(monkeypatch, 
                                                mock_factory, 
                                                cfg_template,
-                                               ctx_manager_factory):
+                                               ctx_manager_factory,
+                                               script_factory):
     """Call tasks simulating a script call."""
     # patch script arguments with a template configuration
-    monkeypatch.setattr(sys, 'argv', [None, cfg_template])
+    script_factory(cfg_template)
 
     # fake device
     monkeypatch.setattr(cli, 'make_device', ctx_manager_factory)
@@ -116,3 +130,37 @@ def test_run_registered_tasks_methods_in_order(monkeypatch,
 
     mock_task.pre_start.assert_called_once()
     mock_task.run.assert_called_once()
+
+
+def test_bind_config_for_each_task(monkeypatch, 
+                                   mock_factory, 
+                                   cfg_template,
+                                   ctx_manager_factory,
+                                   script_factory):
+    """Bind `jnpr.junos.utils.config.Config` for each task run."""
+    tasks_count = 5
+
+    # patch script arguments with a template configuration
+    script_factory(cfg_template)
+
+    # fake device
+    monkeypatch.setattr(cli, 'make_device', ctx_manager_factory)
+
+    # keep mock to assert how many times was called
+    mock_config = mock_factory(side_effect=ctx_manager_factory)
+
+    monkeypatch.setattr(cli,
+                        'Config',
+                        mock_config)
+
+    # generate all tasks
+    task_list = [mock_factory() for _ in range(tasks_count)]
+
+    # override tasks to run
+    monkeypatch.setattr(task, 
+                        'load_list', 
+                        mock_factory(return_value=task_list))
+
+    cli.main()
+
+    assert mock_config.call_count == tasks_count

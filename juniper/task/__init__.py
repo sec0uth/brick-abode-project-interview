@@ -3,11 +3,12 @@
 
 from typing import List
 
-from . import abc, ssh_passwd
+from . import abc, ssh_passwd, banner
 
 # hold default tasks allowed to run.
 registered_ones = [
     ssh_passwd.SSHPassword,
+    banner.BannerTask,
 ]
 
 

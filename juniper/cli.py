@@ -4,6 +4,7 @@ import os
 import sys
 
 from jnpr.junos import Device
+from jnpr.junos.utils.config import Config
 
 from . import config, task
 
@@ -49,9 +50,13 @@ def main():
         task_store.append(task_obj)
 
     # run each task with device connected
-    with juno_dev:
+    with juno_dev as connected_dev:
         for task_obj in task_store:
-            task_obj.run()
+            with Config(connected_dev) as cu:
+                # trick to bind an existing object
+                connected_dev.bind(cu=lambda _: cu)
+
+                task_obj.run()
 
 
 def make_device(config: dict) -> Device:

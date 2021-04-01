@@ -18,7 +18,7 @@ def mock_factory() -> Mock:
 
 
 @pytest.fixture
-def ctx_manager_factory() -> contextlib.AbstractContextManager:
+def ctx_manager_factory(mock_factory) -> contextlib.AbstractContextManager:
     """
     Return a factory to `with` statement context managers.
 
@@ -34,7 +34,7 @@ def ctx_manager_factory() -> contextlib.AbstractContextManager:
 
     @contextlib.contextmanager
     def factory(*_, **__):
-        yield
+        yield mock_factory()
 
     return factory
 

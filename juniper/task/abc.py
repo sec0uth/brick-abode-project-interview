@@ -34,6 +34,11 @@ class AbstractTask(ABC, Util):
         """Return whether task applied changes to device."""
         return self._changed
 
+    @property
+    def changes(self) -> dict:
+        """Return `changes` section of `config` property."""
+        return self.config['changes']
+
     def _set_changed(self) -> None:
         """Set task changed the device."""
         self._changed = True

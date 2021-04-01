@@ -2,6 +2,7 @@
 
 
 import contextlib
+import datetime
 import getpass
 import os
 from unittest.mock import Mock
@@ -58,3 +59,14 @@ def getpass_mock(monkeypatch, mock_factory) -> Mock:
                         getpass_mock)
 
     return getpass_mock
+
+
+@pytest.fixture
+def now_mock(monkeypatch, mock_factory):
+    """Patch `datetime.datetime.now()` classmethod."""    
+    mock_datetime = mock_factory()
+
+    # patch datetime to return test date
+    monkeypatch.setattr(datetime, 'datetime', mock_datetime)
+
+    return mock_datetime.now

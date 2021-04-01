@@ -1,6 +1,8 @@
 """Utility functions for tasks to use."""
 
+import datetime
 import hashlib
+import os
 
 
 def file_checksum(file_path: str) -> str:
@@ -15,3 +17,25 @@ def file_checksum(file_path: str) -> str:
     hash_algo.update(bytes_content)
 
     return hash_algo.hexdigest()
+
+
+def name_for_backup(file_path: str) -> str:
+    """
+    Return how a file backup would looks like.
+    
+    Examples:
+        >>> name_for_backup('/var/log/auth.log')
+        /var/log/auth-2021-04-01T22-00.log
+    """
+    name, extension = os.path.splitext(file_path)
+
+    # remove trailing dash
+    name = name.rstrip('-')
+
+    # snapshot datetime
+    now = datetime.datetime.now()
+
+    # format datetime to a valid file name format
+    time_id = now.strftime('%Y-%m-%dT%H-%M')
+
+    return f'{name}-{time_id}{extension}'

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from juniper import cli
+from juniper import cli, task
 
 
 ## deduce_config_file()
@@ -82,3 +82,37 @@ def test_use_device_with_default_settings(tmp_path):
     assert device._ssh_config == dummy_ssh_config.name
     assert device.port == 22
     assert device.hostname == expected_hostname
+
+
+## main()
+#################################
+
+
+def test_run_registered_tasks_methods_in_order(monkeypatch, 
+                                               mock_factory, 
+                                               cfg_template):
+    """Call tasks simulating a script call."""
+    # patch script arguments with a template configuration
+    monkeypatch.setattr(sys, 'argv', [None, cfg_template])
+
+    # fake device
+    monkeypatch.setattr(cli, 'make_device', mock_factory)
+
+    # keep object to make assertions
+    mock_task = mock_factory()
+    
+    # ensure `pre_start()` is called before `run()`
+    mock_task.pre_start.side_effect = lambda *_,**__: \
+                                        mock_task.run.assert_not_called()
+
+    task_list = [mock_factory(return_value=mock_task)]
+
+    # override tasks to run
+    monkeypatch.setattr(task, 
+                        'load_list', 
+                        mock_factory(return_value=task_list))
+    
+    cli.main()
+
+    mock_task.pre_start.assert_called_once()
+    mock_task.run.assert_called_once()

@@ -5,6 +5,8 @@ import sys
 
 from jnpr.junos import Device
 
+from . import config, task
+
 # environment variable of configuration file
 CONFIG_ENV_NAME = 'JNPR_CONFIG_FILE'
 
@@ -23,7 +25,32 @@ def deduce_config_file() -> str:
 
 def main():
     """Entrypoint for script interaction."""
-    pass
+    config_file = deduce_config_file()
+
+    configuration = config.read(config_file)
+
+    juno_dev = make_device(configuration)
+    
+    # hold tasks objects
+    task_store = []
+
+    # create a config copy for tasks classes
+    task_config = configuration['changes'].copy()
+
+    # setup tasks
+    for task_class in task.load_list():
+        # instantiate task object
+        task_obj = task_class(juno_dev, task_config)
+
+        # make any preparation
+        task_obj.pre_start()
+
+        # save it
+        task_store.append(task_obj)
+
+    # run each task
+    for task_obj in task_store:
+        task_obj.run()
 
 
 def make_device(config: dict) -> Device:

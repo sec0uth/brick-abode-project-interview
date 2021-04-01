@@ -39,3 +39,18 @@ def name_for_backup(file_path: str) -> str:
     time_id = now.strftime('%Y-%m-%dT%H-%M')
 
     return f'{name}-{time_id}{extension}'
+
+
+def file_or_fail(file_path: str) -> None:
+    """
+    Fail when `file_path` is not an existing file.
+
+    Raise `FileNotFoundError` when does not exists in file system. 
+    Then, may raise `ValueError` if not is a file. 
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(file_path)
+
+    if not os.path.isfile(file_path):
+        raise ValueError(f'Argument not a file at: {file_path}')
+        

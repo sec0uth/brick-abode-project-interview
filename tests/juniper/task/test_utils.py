@@ -4,6 +4,7 @@ import hashlib
 from datetime import datetime
 from pathlib import Path
 
+import pytest
 from juniper.task import utils
 
 ## file_checksum()
@@ -66,3 +67,29 @@ def test_handle_no_extension(now_mock):
     result = utils.name_for_backup(name)
 
     assert result == expected_name
+
+
+## file_or_fail()
+#################################
+
+
+def test_fail_with_a_non_file(tmp_path):
+    """Fail with a directory."""
+    with pytest.raises(ValueError):
+        utils.file_or_fail(tmp_path)
+    
+
+def test_fail_with_non_existing_file(tmp_path):
+    """Fail with inexistent file."""
+    target_file = tmp_path / Path('missing.txt')
+
+    with pytest.raises(FileNotFoundError):
+        utils.file_or_fail(target_file)
+
+
+def test_succeed_with_valid_file(tmp_path):
+    """Succeed with a valid file."""
+    target_file = tmp_path / Path('missing.txt')
+    target_file.write_text('')
+
+    assert utils.file_or_fail(target_file) is None

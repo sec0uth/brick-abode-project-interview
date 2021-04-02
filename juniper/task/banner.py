@@ -8,6 +8,9 @@ from . import abc, utils
 class BannerTask(abc.AbstractTask):
     """Change Juniper banner from configuration."""
 
+    # Juno command to edit login banner
+    command_mask = 'set system login message "{content}"'
+
     def pre_start(self) -> None:
         """Ensure `banner_file` exists when using it."""
         if self.use_banner_file():
@@ -26,10 +29,8 @@ class BannerTask(abc.AbstractTask):
         # clean content
         content = raw_content.strip()
 
-        # apply configuration change
-        with Config(self.dev) as cu:
-            cu.load(f'set system login message "{content}"', format='set')
-            cu.commit()
+        self.dev.cu.load(self.command_mask.format(content=content))
+        self.dev.cu.commit()
     
     def use_banner_file(self) -> bool:
         """Return whether task should use `banner_file`."""

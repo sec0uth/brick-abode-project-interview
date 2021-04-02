@@ -13,7 +13,7 @@ You can start testing or running with provided docker environment. Containers we
  - [podman-compose](https://github.com/containers/podman-compose) v0.1.7dev
 
 ### Getting Started
-Podman is the open source alternative to Docker, and one of it's features is the rootless containers. You will see all the commands running without sudo, but off course you can run as root too.
+Podman is the open source alternative to Docker, and one of it's features is rootless containers. You will see the commands without `sudo`, but off course you can run as root too.
 
 1. You must download/clone the project.
 

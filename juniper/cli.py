@@ -24,7 +24,7 @@ def deduce_config_file() -> str:
     return config_file
 
 
-def main():
+def main() -> int:
     """Entrypoint for script interaction."""
     config_file = deduce_config_file()
 
@@ -57,6 +57,8 @@ def main():
             
             for task_obj in task_store:
                 task_obj.run()
+
+    return 0
 
 
 def make_device(config: dict) -> Device:

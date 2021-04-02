@@ -5,10 +5,18 @@ services:
     extends:
       file: ./juniper/docker-compose.yaml
       service: prod
+
     volumes:
       - ~/.ssh/config:/root/.ssh/config:Z,ro
+
       ## ssh public key authentication
       # - ~/.ssh/juniper_key:/root/.ssh/id_rsa:Z,ro
+
+      ## Juniper configuration
+      # - ./juniper-config.yml:/config.yml:Z,ro
+    
+    environment:
+      JNPR_CONFIG_FILE: /config.yml
 
   juniper-dev:
     extends:

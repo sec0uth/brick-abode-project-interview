@@ -18,6 +18,12 @@ def script_factory(monkeypatch) -> callable:
     return factory
 
 
+@pytest.fixture(autouse=True)
+def remove_original_arguments(script_factory):
+    """Remove any original arguments from `pytest`."""
+    script_factory()
+
+
 ## deduce_config_file()
 #################################
 

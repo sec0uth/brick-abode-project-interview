@@ -5,4 +5,4 @@ FROM local-base:dev
 ADD ./requirements.txt /tmp/juniper-requirements.txt
 RUN pip3 install -r /tmp/juniper-requirements.txt
 
-CMD ["python3", "cli.py"]
+CMD ["python3", "juno-console.py"]

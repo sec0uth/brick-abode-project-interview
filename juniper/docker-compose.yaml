@@ -3,9 +3,10 @@ version: "2"
 services:
   prod:
     build: ./juniper/
-    working_dir: /juniper/
+    working_dir: /
     volumes:
       - ./juniper:/juniper:Z,ro
+      - ./juno-console.py:/juno-console.py:Z,ro
 
   dev:
     build:

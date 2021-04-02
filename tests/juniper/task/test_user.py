@@ -14,11 +14,12 @@ def task(mock_factory):
             'user': {
                 'name': 'testuser',
                 'passwd': 'h4ckme',
+                'class': 'baz',
             }
         }
     }
 
-    return user.UserManagement(mock_factory(), config)
+    return user.UserMgmtTask(mock_factory(), config)
 
 
 def test_ask_user_password_when_missing(task, getpass_mock):
@@ -42,7 +43,7 @@ def test_update_user_provided_password(task, getpass_mock):
 
     task.pre_start()
 
-    assert task.changes['passwd'] == expected_passwd
+    assert task.changes['user']['passwd'] == expected_passwd
 
 
 def test_load_command_with_user_name_and_class(task, mock_factory):
@@ -63,11 +64,11 @@ def test_load_command_with_user_name_and_class(task, mock_factory):
 
     command = task.dev.cu.load.call_args[0][0]
 
-    assert expected_name in command
-    assert expected_class in command
+    assert config['name'] in command
+    assert config['class'] in command
 
 
-def test_commits_configuration_finally(task):
+def test_commits_configuration_finally(task, mock_factory):
     """Commit configuration at the end."""
     # patch dev configuration
     task.dev.cu = mock_factory()

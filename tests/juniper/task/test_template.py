@@ -39,7 +39,7 @@ def test_prioritize_config_text(task):
     # trigger
     task.run()
 
-    call_kwargs = task.dev.cu.load.call_args.kwargs
+    call_kwargs = task.dev.cu.load.call_args[1]
 
     assert call_kwargs['template_path'] != task.changes['config_file']
 
@@ -56,16 +56,17 @@ def test_load_template_with_facts(task):
     # trigger
     task.run()
 
-    call_kwargs = task.dev.cu.load.call_args.kwargs
+    call_kwargs = task.dev.cu.load.call_args[1]
 
     assert call_kwargs['template_vars'] == expected_facts
 
 
 def test_load_template_with_temporary_file(task, 
                                            monkeypatch,
-                                           mock_factory):
+                                           mock_factory,
+                                           tmp_path):
     """Load template using a temporary file with `config`."""
-    expected_path = '/foo/bar/baz'
+    expected_path = tmp_path / Path('baz.tmp')
 
     # tuple with some file descriptor and the file path
     mkstemp_ret = (1, expected_path)
@@ -77,15 +78,15 @@ def test_load_template_with_temporary_file(task,
     # trigger
     task.run()
 
-    call_kwargs = task.dev.cu.load.call_args.kwargs
+    call_kwargs = task.dev.cu.load.call_args[1]
 
     assert call_kwargs['template_path'] == expected_path
 
 
 def test_load_template_with_text(task, 
-                                        monkeypatch,
-                                        mock_factory,
-                                        tmp_path):
+                                 monkeypatch,
+                                 mock_factory,
+                                 tmp_path):
     """Load template using a temporary file to store `config` text."""
     dummy_file = tmp_path / Path('template.j2')
 
@@ -110,7 +111,7 @@ def test_load_template_with_config_file(task):
     # trigger
     task.run()
 
-    call_kwargs = task.dev.cu.load.call_args.kwargs
+    call_kwargs = task.dev.cu.load.call_args[1]
 
     assert call_kwargs['template_path'] == task.changes['config_file']
 

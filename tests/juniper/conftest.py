@@ -34,7 +34,10 @@ def ctx_manager_factory(mock_factory) -> contextlib.AbstractContextManager:
 
     @contextlib.contextmanager
     def factory(*_, **__):
-        yield mock_factory()
+        if 'return_value' in __:
+            yield __['return_value']
+        else:
+            yield mock_factory()
 
     return factory
 

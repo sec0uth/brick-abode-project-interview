@@ -1,7 +1,6 @@
 """Load arbitrary configuration with Jinja2 template engine."""
 
 
-import os
 import tempfile
 
 from . import abc, utils
@@ -19,14 +18,19 @@ class CfgTemplateTask(abc.AbstractTask):
         """Start task."""
         if self.use_config_file():
             template_path = self.changes['config_file']
+
+            self.load_and_commit(template_path)
         else:
-            # create a temp file to store text
-            template_path = tempfile.mkstemp()[1]
+            with tempfile.NamedTemporaryFile() as tmp_file:
+                text_bytes = self.changes['config'].encode('utf-8')
 
-            # write `config` to file
-            with open(template_path, 'w') as fp:
-                fp.write(self.changes['config'])
+                # write `config` to file
+                tmp_file.write(text_bytes)
 
+                self.load_and_commit(tmp_file.name)
+
+    def load_and_commit(self, template_path: str) -> None:
+        """Manage loading and commiting template."""
         # gather facts
         facts = self.dev.facts
 
@@ -34,12 +38,6 @@ class CfgTemplateTask(abc.AbstractTask):
                          template_vars=facts)
 
         self.dev.cu.commit()
-
-        if not self.use_config_file():
-            try:
-                os.unlink(template_path)
-            except Exception as exc:
-                print(exc)
 
     def use_config_file(self) -> bool:
         """Return whether should use `config_file`."""

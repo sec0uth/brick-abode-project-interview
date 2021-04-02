@@ -2,6 +2,7 @@
 
 import tempfile
 from pathlib import Path
+from unittest.mock import Mock
 
 import pytest
 
@@ -19,6 +20,22 @@ def task(mock_factory):
     }
 
     return template.CfgTemplateTask(mock_factory(), default_config)
+
+
+@pytest.fixture
+def mock_named_tmp_file(mock_factory, 
+                        monkeypatch, 
+                        ctx_manager_factory) -> Mock:
+    """Mock `tempfile.NamedTemporaryFile` context manager."""
+    mock_tmp_file = mock_factory()
+
+    # make context manager return our `mock_tmp_file`
+    mock_ctx = ctx_manager_factory(return_value=mock_tmp_file)
+
+    monkeypatch.setattr(tempfile, 
+                        'NamedTemporaryFile', 
+                        mock_factory(return_value=mock_ctx))
+    return mock_tmp_file
 
 
 ## CfgTemplateTask.run()
@@ -61,19 +78,12 @@ def test_load_template_with_facts(task):
     assert call_kwargs['template_vars'] == expected_facts
 
 
-def test_load_template_with_temporary_file(task, 
-                                           monkeypatch,
-                                           mock_factory,
-                                           tmp_path):
+def test_load_template_with_temporary_file(task, mock_named_tmp_file):
     """Load template using a temporary file with `config`."""
-    expected_path = tmp_path / Path('baz.tmp')
+    expected_path = '/foo/bar/baz'
 
-    # tuple with some file descriptor and the file path
-    mkstemp_ret = (1, expected_path)
-
-    monkeypatch.setattr(tempfile, 
-                        'mkstemp', 
-                        mock_factory(return_value=mkstemp_ret))
+    # patch name function
+    mock_named_tmp_file.name = expected_path
 
     # trigger
     task.run()
@@ -83,24 +93,14 @@ def test_load_template_with_temporary_file(task,
     assert call_kwargs['template_path'] == expected_path
 
 
-def test_load_template_with_text(task, 
-                                 monkeypatch,
-                                 mock_factory,
-                                 tmp_path):
+def test_load_template_with_text(task, mock_named_tmp_file):
     """Load template using a temporary file to store `config` text."""
-    dummy_file = tmp_path / Path('template.j2')
-
-    # tuple with some file descriptor and the file path
-    mkstemp_ret = (1, dummy_file)
-
-    monkeypatch.setattr(tempfile, 
-                        'mkstemp', 
-                        mock_factory(return_value=mkstemp_ret))
-
     # trigger
     task.run()
 
-    assert dummy_file.read_text() == task.changes['config']
+    text_bytes = task.changes['config'].encode('utf-8')
+
+    mock_named_tmp_file.write.assert_called_once_with(text_bytes)
 
 
 def test_load_template_with_config_file(task):

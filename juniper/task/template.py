@@ -27,6 +27,10 @@ class CfgTemplateTask(abc.AbstractTask):
                 # write `config` to file
                 tmp_file.write(text_bytes)
 
+                # have to force pushing data to disk,
+                # otherwise Jinja doesn't have time to read
+                tmp_file.flush()
+
                 self.load_and_commit(tmp_file.name)
 
     def load_and_commit(self, template_path: str) -> None:

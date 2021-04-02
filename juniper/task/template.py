@@ -35,7 +35,8 @@ class CfgTemplateTask(abc.AbstractTask):
         facts = self.dev.facts
 
         self.dev.cu.load(template_path=template_path,
-                         template_vars=facts)
+                         template_vars=facts,
+                         format='set')
 
         self.dev.cu.commit()
 

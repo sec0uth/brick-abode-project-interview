@@ -51,11 +51,11 @@ def main():
 
     # run each task with device connected
     with juno_dev as connected_dev:
-        for task_obj in task_store:
-            with Config(connected_dev) as cu:
-                # trick to bind an existing object
-                connected_dev.bind(cu=lambda _: cu)
-
+        with Config(connected_dev) as cu:
+            # trick to bind an existing object
+            connected_dev.bind(cu=lambda _: cu)
+            
+            for task_obj in task_store:
                 task_obj.run()
 
 

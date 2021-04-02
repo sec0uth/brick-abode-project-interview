@@ -132,14 +132,12 @@ def test_run_registered_tasks_methods_in_order(monkeypatch,
     mock_task.run.assert_called_once()
 
 
-def test_bind_config_for_each_task(monkeypatch, 
-                                   mock_factory, 
-                                   cfg_template,
-                                   ctx_manager_factory,
-                                   script_factory):
+def test_bind_config_once(monkeypatch, 
+                          mock_factory, 
+                          cfg_template,
+                          ctx_manager_factory,
+                          script_factory):
     """Bind `jnpr.junos.utils.config.Config` for each task run."""
-    tasks_count = 5
-
     # patch script arguments with a template configuration
     script_factory(cfg_template)
 
@@ -153,8 +151,8 @@ def test_bind_config_for_each_task(monkeypatch,
                         'Config',
                         mock_config)
 
-    # generate all tasks
-    task_list = [mock_factory() for _ in range(tasks_count)]
+    # generate 5 tasks
+    task_list = [mock_factory() for _ in range(5)]
 
     # override tasks to run
     monkeypatch.setattr(task, 
@@ -163,4 +161,4 @@ def test_bind_config_for_each_task(monkeypatch,
 
     cli.main()
 
-    assert mock_config.call_count == tasks_count
+    mock_config.assert_called_once()

@@ -1,0 +1,23 @@
+## template configuration file
+
+# logging:
+#   verbose: true
+#   console: true
+#   file: null
+
+ssh:
+  # config: ~/.ssh/config
+  host: juniper
+  # ask_passwd: false
+
+changes:
+  banner: "\\n\\n\\t\\t This is Banner \\n\\n"
+  # banner_file: motd.txt
+
+  user:
+    name: anyone
+    passwd: de039b4554b64d71a91f6ee91fd12
+
+  config: set system login user anyone class operator
+  # config_file: template.j2
+

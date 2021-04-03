@@ -176,8 +176,7 @@ pip-selfcheck.json
 # End of https://www.toptal.com/developers/gitignore/api/python,ansible,vscode,virtualenv
 
 ### custom ansible testing inventory
-ansible/testing-inventory/
-ansible/ansible.cfg
+ansible/src/ansible.cfg
 
 ### custom compose dev
 /docker-compose.yaml

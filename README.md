@@ -86,10 +86,10 @@ It errors out with this traceback. It says that some `/config.yml` is not a file
 The Juniper application needs a configuration file with the user arguments like ssh host, banner message and so on. It can read this file from a environment variable called `JNPR_CONFIG_FILE`. So now let's take a look at the juniper service at `docker-compose.yml`.
 
 ```yml
+...
+
 juniper:
-    extends:
-        file: ./juniper/docker-compose.yaml
-        service: prod
+    ...
 
     volumes:
         - ~/.ssh/config:/root/.ssh/config:Z,ro
@@ -109,3 +109,72 @@ There it is. The compose file already set the environment variable, but the volu
 Now is the moment you take a deep breath, because before actually running Juniper, you must be aware of how the configuration file works.
 
 ### Juniper Configuration
+
+You should read the speficiation in this issue #11.
+
+You may want just a quick configuration to test out if it works, and there it is:
+
+```yml
+## minimal configuration
+
+ssh:
+  host: juniper
+
+changes:
+  banner: "\\n\\n\\t\\t This is a Banner \\n\\n"
+
+  user:
+    name: anyone
+
+  config: set system host-name juniper-router
+```
+
+### SSH Authentication
+The supported method to specify wich host to connect is using a [ssh_config](https://www.man7.org/linux/man-pages/man5/ssh_config.5.html) file. 
+
+If you are connecting using a password, the configuration file should look like this:
+
+```yml
+...
+
+ssh:
+  ...
+  
+  passwd: secret-password
+```
+
+Or you can provide the password when running the program:
+
+```yml
+...
+
+ssh:
+  ...
+  
+  ask_passwd: true
+```
+
+The preferred authentication mechanism is public key. When using them, the configuration file does not even notice, the job is done by a [docker script](https://github.com/sec0uth/brick-abode-project-interview/blob/juniper-dev/docker-scripts/entrypoint.sh) that start a ssh-agent and add the public key. You must then, edit the docker-compose file to reference your access private key in the volume:
+
+```yml
+...
+
+juniper:
+    ...
+
+    volumes:
+      - ~/.ssh/config:/root/.ssh/config:Z,ro
+
+      ## ssh public key authentication
+      - ~/.ssh/your-juniper-private-key:/root/.ssh/id_rsa:Z,ro
+```
+
+You should note that `/root/.ssh/id_rsa` is hard-coded, so do not worry if you are not using RSA in your key. You just must ensure it mounts the private key at that path.
+
+### Finally Running Juniper
+
+After you have set the configuration file and ssh authentication, you may be able to run the Juniper production image with the discussed command:
+
+```bash
+$ podman-compose run juniper
+```

@@ -27,7 +27,7 @@ $ podman build -t local-base:dev -f Dockerfile.base
 
 This base image is used both to test and run the application, so it should not be hard to make a different image using an operating system different than Ubuntu 18.04. 
 
-3. You must create the `docker-compose.yaml`. You may use the example docker-compose file, like the following command:
+3. You must create the `docker-compose.yaml`. You may use the example docker-compose file, with the following command:
 
 ```
 $ cp docker-compose.yaml.example docker-compose.yaml
@@ -104,7 +104,11 @@ juniper:
         JNPR_CONFIG_FILE: /config.yml
 ```
 
-There it is. The compose file already set the environment variable, but the volume corresponding to the configuration file is commented out. You can copy the example configuration file to the expected file name and then uncomment that line. 
+There it is. The compose file already set the environment variable, but the volume corresponding to the configuration file is commented out. You can copy the example configuration file to the expected file name and then uncomment that line.
+
+```bash
+$ cp juniper-config.yml.example juniper-config.yml
+```
 
 Now is the moment you take a deep breath, because before actually running Juniper, you must be aware of how the configuration file works.
 

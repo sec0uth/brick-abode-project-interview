@@ -57,7 +57,7 @@ Let's first understand how this docker compose thing works. The very basic beggi
 ![image](https://user-images.githubusercontent.com/81310341/113460356-e184ac00-93ee-11eb-8ece-d8f9a93c765c.png)
 
 Well done. 
-You can now just run the `juniper-dev` image without the `bash` command, but with the default command of the image.
+You can now just run the `juniper-dev` image without the `bash` command, but with images' default command.
 
 ![image](https://user-images.githubusercontent.com/81310341/113460466-4f30d800-93ef-11eb-99ad-1e3d8caad21e.png)
 
@@ -83,7 +83,7 @@ FileNotFoundError: [Errno 2] No such file or directory: '/config.yml'
 
 It errors out with this traceback. It says that some `/config.yml` is not a file, or is missing. 
 
-The Juniper application needs a configuration file with the user arguments like ssh host, banner message and so on. It can read this file from a environment variable called `JNPR_CONFIG_FILE`. So now let's take a look at the juniper service at `docker-compose.yml`.
+The Juniper application needs a configuration file with the user arguments like ssh host, banner message and so on. It can read this file from an environment variable called `JNPR_CONFIG_FILE`. So let's inspect the juniper service at `docker-compose.yml`.
 
 ```yml
 ...
@@ -110,7 +110,7 @@ Now is the moment you take a deep breath, because before actually running Junipe
 
 ### Juniper Configuration
 
-You should read the speficiation in this issue #11.
+You should read the speficiation in this issue [#11](https://github.com/sec0uth/brick-abode-project-interview/issues/11).
 
 You may want just a quick configuration to test out if it works, and there it is:
 
@@ -129,10 +129,13 @@ changes:
   config: set system host-name juniper-router
 ```
 
-### SSH Authentication
+You should note that when you do not specify a password for the `user`, the application will ask for one at runtime, as part of it's bootstraping process.
+
+### SSH
 The supported method to specify wich host to connect is using a [ssh_config](https://www.man7.org/linux/man-pages/man5/ssh_config.5.html) file. 
 
-If you are connecting using a password, the configuration file should look like this:
+#### Authentication
+If you are connecting using a password, juniper-configuration file should look like this:
 
 ```yml
 ...
@@ -143,7 +146,7 @@ ssh:
   passwd: secret-password
 ```
 
-Or you can provide the password when running the program:
+Or you can provide a password at application runtime:
 
 ```yml
 ...
@@ -154,7 +157,7 @@ ssh:
   ask_passwd: true
 ```
 
-The preferred authentication mechanism is public key. When using them, the configuration file does not even notice, the job is done by a [docker script](https://github.com/sec0uth/brick-abode-project-interview/blob/juniper-dev/docker-scripts/entrypoint.sh) that start a ssh-agent and add the public key. You must then, edit the docker-compose file to reference your access private key in the volume:
+The preferred authentication mechanism is public key. When using them, juniper-configuration file is not aware of such thing, the job is done by a [docker script](https://github.com/sec0uth/brick-abode-project-interview/blob/juniper-dev/docker-scripts/entrypoint.sh) that starts a ssh-agent and add the public key. You must then, edit the docker-compose file to reference your access private key in the volume:
 
 ```yml
 ...
@@ -173,7 +176,7 @@ You should note that `/root/.ssh/id_rsa` is hard-coded, so do not worry if you a
 
 ### Finally Running Juniper
 
-After you have set the configuration file and ssh authentication, you may be able to run the Juniper production image with the discussed command:
+After you have set ssh and juniper-configuration file, you may be able to run the Juniper production image with the discussed command:
 
 ```bash
 $ podman-compose run juniper

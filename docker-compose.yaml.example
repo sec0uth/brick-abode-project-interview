@@ -23,6 +23,14 @@ services:
       file: ./juniper/docker-compose.yaml
       service: dev
 
+  juniper-pydoc:
+    extends:
+      file: ./juniper/docker-compose.yaml
+      service: dev
+    command: start-pydoc-server.sh
+    ports:
+      - 8080:8080
+
   ansible-dev:
     build: ./ansible/
     working_dir: /ansible/

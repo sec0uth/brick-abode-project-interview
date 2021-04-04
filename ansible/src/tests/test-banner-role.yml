@@ -3,7 +3,7 @@
 - name: Define banner text and class
   set_fact:
     banner:
-      text: \n\n\tThis is a Banner\n\n
+      text: This is a Banner
       class: motd
 
 - name: Ensure banner does not exists

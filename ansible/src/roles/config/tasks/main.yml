@@ -1,1 +1,6 @@
-# Change `running-conf` with custom template file..
+# Modify `running-config` with custom template file.
+
+- name: Modify current configuration with template file
+  ios_config:
+    src: "{{ config.file | mandatory }}"
+    save_when: "{{ config.save_when | default(default_save_when) }}"

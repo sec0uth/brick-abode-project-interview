@@ -1,0 +1,7 @@
+---
+
+# default method to perform when deciding to save 
+# `runnining-config` to `startup-config` 
+#
+# see https://docs.ansible.com/ansible/latest/collections/cisco/ios/ios_config_module.html#parameter-save_when
+default_save_when: changed

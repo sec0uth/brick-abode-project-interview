@@ -5,7 +5,17 @@
   gather_facts: false
 
   tasks:
+    - name: Define test vars
+      set_fact:
+        user:
+          name: little-cisco
+          # generate a new password every time, enforce a good password
+          # policy even in development environment.
+          password: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
+
     - include_tasks: ./tests/{{ item }}
+      vars:
+        test_user: "{{ user }}"
       with_items:
         - test-user-role.yml
         - test-banner-role.yml

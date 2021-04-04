@@ -11,29 +11,23 @@
 
 - name: Write content to configuration file
   ansible.builtin.copy:
-    ## using banner configuration here because it's easy to test
-    ##
-    ## `ios_banner` module failed to recognize banners without a leading new line
-    ## that's why the non-sense `\x0a` in the beggining (0A is \n in ASCII)
-    content: banner motd c\x0aLine 1\x0aLine 2c
+    content: username {{ test_user.name }} nopassword
     dest: "{{ config_file }}"
 
-- name: Ensure config is not present
-  ios_banner:
-    banner: motd
-    text: |
-      Line 1
-      Line 2
+- name: Ensure test user is absent
+  ios_user:
+    name: "{{ test_user.name }}"
     state: absent
 
 # provide testing vars
-- import_role: 
+- import_role:
     name: config
   vars:
-    config_file: "{{ config_file }}"
+    config:
+      file: "{{ config_file }}"
+      save_when: never
 
-- name: Ensure configuration is already modified
-  ios_config:
-    src: "{{ config_file }}"
-  register: config_state
-  failed_when: config_state.changed
+- name: Ensure test user was created
+  ios_user:
+    name: "{{ test_user.name }}"
+    state: present

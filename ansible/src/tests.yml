@@ -4,20 +4,9 @@
   # facts are not used in testing
   gather_facts: false
 
-  pre_tasks:
-    # see https://gist.github.com/cbrunnkvist/2a6090b35a9de7e8bac7c2f49ddb7409
-    - name: Ensure host public key is known
-      delegate_to: localhost
-      lineinfile:
-        dest: ~/.ssh/known_hosts
-        create: yes
-        state: present
-        line: "{{ lookup('pipe', 'ssh-keyscan ' + inventory_hostname) }}"
-
   tasks:
-    - name: Tests registration
-      include_tasks: ./tests/{{ item }}
+    - include_tasks: ./tests/{{ item }}
       with_items:
-        # - test-user-role.yml
+        - test-user-role.yml
         - test-banner-role.yml
         - test-config-role.yml

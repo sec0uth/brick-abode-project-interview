@@ -1,0 +1,8 @@
+---
+
+# whether or not to ask the configured user password
+ask_password: false
+
+# whether or not to change the password every time
+# this role is executed.
+always_update_password: true

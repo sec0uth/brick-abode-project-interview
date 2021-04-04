@@ -1,0 +1,7 @@
+---
+
+- name: Ensure user exists without a password
+  ios_user:
+    name: "{{ user.name }}"
+    nopassword: true
+    state: present

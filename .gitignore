@@ -184,3 +184,6 @@ ansible/src/development
 
 ### custom development virtualenv
 dev-venv/
+
+## Juniper user config 
+juniper-config.yml

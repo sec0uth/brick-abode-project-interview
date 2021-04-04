@@ -1,0 +1,26 @@
+---
+
+- name: Define test user name
+  set_fact:
+    user_name: little-cisco
+
+- name: Ensure user does not exists yet
+  ios_user:
+    name: "{{ user_name }}"
+    nopassword: true
+    state: absent
+
+# provide testing vars
+- import_role: 
+    name: user
+  vars:
+    user:
+      name: "{{ user_name }}"
+
+- name: Ensure user is already created
+  ios_user:
+    name: "{{ user_name }}"
+    nopassword: true
+    state: present
+  register: user_state
+  failed_when: user_state.changed

@@ -31,6 +31,17 @@ services:
     ports:
       - 8080:8080
 
+  ansible-prod:
+    extends:
+      file: ./ansible/docker-compose.yaml
+      service: prod
+    volumes:
+      ## ssh public key authentication
+      # - ~/.ssh/cisco-router:/root/.ssh/id_rsa:Z,ro
+
+      ## Ansible inventory file
+      # - ./production-inventory:/inventory:Z,ro
+
   ansible-dev:
     extends:
       file: ./ansible/docker-compose.yaml
@@ -40,4 +51,4 @@ services:
       # - ~/.ssh/cisco-router:/root/.ssh/id_rsa:Z,ro
 
       ## Ansible inventory file
-      - ./development-inventory:/ansible/inventory:Z,ro
+      # - ./development-inventory:/inventory:Z,ro

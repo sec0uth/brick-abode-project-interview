@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  prod:
+    build: ./ansible/
+    working_dir: /ansible/
+    command: ansible
+    volumes:
+      - ./ansible/src:/ansible:Z,ro
+
+  dev:
+    build: ./ansible/
+    working_dir: /ansible/
+    command: sh -c "ansible-playbook ./tests/*.yml"
+    volumes:
+      - ./ansible/src:/ansible:Z,ro
+      - ~/.ssh/known_hosts:/root/.ssh/known_hosts:Z,ro
+    environment:
+      ANSIBLE_CONFIG: /ansible/tests/ansible.cfg
+      ANSIBLE_INVENTORY: /ansible/inventory

@@ -32,10 +32,12 @@ services:
       - 8080:8080
 
   ansible-dev:
-    build: ./ansible/
-    working_dir: /ansible/
+    extends:
+      file: ./ansible/docker-compose.yaml
+      service: dev
     volumes:
-      - ./ansible:/ansible:Z,ro
+      ## ssh public key authentication
+      # - ~/.ssh/cisco-router:/root/.ssh/id_rsa:Z,ro
 
-    ## ssh public key authentication
-    #  - ~/.ssh/ansible_key:/root/.ssh/id_rsa:Z,ro
+      ## Ansible inventory file
+      - ./development-inventory:/ansible/inventory:Z,ro

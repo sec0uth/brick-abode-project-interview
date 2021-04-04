@@ -20,3 +20,4 @@
       with_items:
         # - test-user-role.yml
         - test-banner-role.yml
+        - test-config-role.yml

@@ -4,15 +4,17 @@
 # Table of contents
 - [Building Docker Images](#building-docker-images)
 - [Test & Run](#test--run)
+  - [Juniper](#ansible)
+  - [Ansible](#ansible)
 
-## Building Docker Images
+# Building Docker Images
 You can start testing or running with provided docker environment. Containers were the chosen method to achieve the requirement of testing and runing on a `Ubuntu 18.04` system.
 
-### Requirements
+## Requirements
  - [podman](https://podman.io/getting-started/installation) v3.0.1
  - [podman-compose](https://github.com/containers/podman-compose) v0.1.7dev
 
-### Getting Started
+## Getting Started
 Podman is the open source alternative to Docker, and one of it's features is rootless containers. You will see the commands without `sudo`, but off course you can run as root too.
 
 1. You must download/clone the project.
@@ -49,10 +51,11 @@ Or even exactly what you really need.
 $ podman-compose build ansible-dev juniper
 ```
 
-## Test & Run
+# Test & run
+
 **You must have followed the steps to build the docker images before continuing.**
 
-Let's first understand how this docker compose thing works. The very basic beggining is getting a shell on the image.
+You must first understand how this docker compose thing works. The very basic beggining is to get a shell on the image.
 
 ![image](https://user-images.githubusercontent.com/81310341/113460356-e184ac00-93ee-11eb-8ece-d8f9a93c765c.png)
 
@@ -61,7 +64,9 @@ You can now just run the `juniper-dev` image without the `bash` command, but wit
 
 ![image](https://user-images.githubusercontent.com/81310341/113460466-4f30d800-93ef-11eb-99ad-1e3d8caad21e.png)
 
-You have just tested the image and hopefully the tests have passed.
+You have just tested the image and hopefully the tests have passed. As one can see, the command accepts a custom script otherwise it uses the one provided by the developer.
+
+## Juniper
 
 What if you want to run Juniper? You may answer, just run `podman-compose run juniper`.
 
@@ -112,7 +117,7 @@ $ cp juniper-config.yml.example juniper-config.yml
 
 Now is the moment you take a deep breath, because before actually running Juniper, you must be aware of how the configuration file works.
 
-### Juniper Configuration
+### Configuration
 
 You should read the speficiation in this issue [#11](https://github.com/sec0uth/brick-abode-project-interview/issues/11).
 
@@ -138,7 +143,7 @@ You should note that when you do not specify a password for the `user`, the appl
 ### SSH
 The supported method to specify wich host to connect is using a [ssh_config](https://www.man7.org/linux/man-pages/man5/ssh_config.5.html) file. 
 
-#### Authentication
+### Authentication
 If you are connecting using a password, juniper-configuration file should look like this:
 
 ```yml
@@ -178,10 +183,53 @@ juniper:
 
 You should note that `/root/.ssh/id_rsa` is hard-coded, so do not worry if you are not using RSA in your key. You just must ensure it mounts the private key at that path.
 
-### Finally Running Juniper
+### Finally running juniper
 
 After you have set ssh and juniper-configuration file, you may be able to run the Juniper production image with the discussed command:
 
 ```bash
 $ podman-compose run juniper
+```
+
+## Ansible
+
+You can start to configure your inventory, for that you can use an example at `ansible/src/hosts.example`. This is a regular inventory, the only requirement in place is for the Cisco device to be part of the `ios` group, because there are already pre-configured `group_vars` adjusted for that group. 
+
+For the purpose of explanation, imagine you named your inventory file `development-inventory`.
+
+Now you must edit your docker-compose file to reflect this inventory you have just created.
+
+```yml
+...
+
+ansible-dev:
+    ...
+
+    volumes:
+      ... 
+
+      - ./development-inventory:/inventory:Z,ro
+```
+
+This inventory configuration works in the same way on the `prod` environment.
+
+Your next step is to configure the private key in the docker-compose file just like with `Juniper`. Uncomment the line corresponding to the ssh authentication and specify the path to the private key. In the end it should look like this:
+
+```yml
+...
+
+ansible-dev:
+    ...
+
+    volumes:
+      ## ssh public key authentication
+      - ~/.ssh/your-juniper-private-key:/root/.ssh/id_rsa:Z,ro
+
+      - ./development-inventory:/inventory:Z,ro
+```
+
+You can now test successfully test Ansible using the command:
+
+```bash
+$ podman-compose run ansible-dev
 ```

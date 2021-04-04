@@ -37,7 +37,7 @@ services:
       service: prod
     volumes:
       ## ssh public key authentication
-      # - ~/.ssh/cisco-router:/root/.ssh/id_rsa:Z,ro
+      # - ~/.ssh/cisco_key:/root/.ssh/id_rsa:Z,ro
 
       ## Ansible inventory file
       # - ./production-inventory:/inventory:Z,ro
@@ -48,7 +48,7 @@ services:
       service: dev
     volumes:
       ## ssh public key authentication
-      # - ~/.ssh/cisco-router:/root/.ssh/id_rsa:Z,ro
+      # - ~/.ssh/cisco_key:/root/.ssh/id_rsa:Z,ro
 
       ## Ansible inventory file
       # - ./development-inventory:/inventory:Z,ro

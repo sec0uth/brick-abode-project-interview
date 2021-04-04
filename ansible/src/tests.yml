@@ -18,4 +18,5 @@
     - name: Tests registration
       include_tasks: ./tests/{{ item }}
       with_items:
-        - test-user-role.yml
+        # - test-user-role.yml
+        - test-banner-role.yml

@@ -1,27 +1,19 @@
 # Test role creates user with name and password.
 
-- name: Define test vars
-  set_fact:
-    user:
-      name: little-cisco
-      # generate a new password every time, enforce a good password
-      # policy even in development environment.
-      password: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
-
 - name: Ensure user does not exists yet
   ios_user:
-    name: "{{ user.name }}"
+    name: "{{ test_user.name }}"
     state: absent
 
 # provide testing vars
 - import_role:
     name: user
   vars:
-    user: "{{ user }}"
+    user: "{{ test_user }}"
 
 - name: Ensure user is already created
   ios_user:
-    name: "{{ user.name }}"
+    name: "{{ test_user.name }}"
     state: present
   register: user_state
   failed_when: user_state.changed
@@ -30,8 +22,8 @@
   ios_command:
     commands: show clock
   vars:
-    ansible_user: "{{ user.name }}"
-    ansible_ssh_pass: "{{ user.password }}"
+    ansible_user: "{{ test_user.name }}"
+    ansible_ssh_pass: "{{ test_user.password }}"
   register: user_auth_attempt
 
   # rely on a generic verification, whether it could authenticate or not

@@ -1,1 +1,24 @@
-# Change the banner
+# Modify the banner.
+
+- name: Deduce banner mode
+  set_fact:
+    banner_mode: "{{ banner.mode | default(default_banner) }}"
+
+# `ios_banner` does not handle very well texts 
+# without a trailing line feed.
+#
+# the following code use regex to ensure banner text ends with a LF.
+# 
+# code at: ansible_collections/cisco/ios/plugins/modules/ios_banner.py:133
+- name: Maybe append banner's required line feed
+  set_fact:
+    banner:
+      text: "{{ banner.text }}\n"
+      mode: "{{ banner.mode }}"
+  when: 'not (banner.text | regex_search("\n$") | bool)'
+
+- name: Modify banner on device
+  ios_banner:
+    banner: "{{ banner_mode }}"
+    text: "{{ banner.text }}"
+    state: present

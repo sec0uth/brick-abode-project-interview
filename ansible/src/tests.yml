@@ -4,8 +4,14 @@
   # facts are not used in testing
   gather_facts: false
 
+  vars:
+    registered_tests:
+      - test-user-role.yml
+      - test-banner-role.yml
+      - test-config-role.yml
+
   tasks:
-    - name: Define test vars
+    - name: Define enhanced vars to test users
       set_fact:
         user:
           name: little-cisco
@@ -13,10 +19,22 @@
           # policy even in development environment.
           password: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
 
-    - include_tasks: ./tests/{{ item }}
-      vars:
-        test_user: "{{ user }}"
-      with_items:
-        - test-user-role.yml
-        - test-banner-role.yml
-        - test-config-role.yml
+    - name: Run tests carefully to always revert old configuration
+      block:
+        - include_tasks: ./tests/{{ item }}
+          vars:
+            test_user: "{{ user }}"
+          with_items: "{{ registered_tests }}"
+
+      always:
+        - name: Ensure testing user is absent
+          ios_user:
+            name: "{{ user.name }}"
+            state: absent
+        
+        - name: Ensure testing banners are absent
+          ios_banner:
+            banner: "{{ item }}"
+            state: absent
+          with_items:
+            - motd

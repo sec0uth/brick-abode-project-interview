@@ -4,7 +4,7 @@
 # Table of contents
 - [Building Docker Images](#building-docker-images)
 - [Test & Run](#test--run)
-  - [Juniper](#ansible)
+  - [Juniper](#juniper)
   - [Ansible](#ansible)
 
 # Building Docker Images
@@ -263,7 +263,7 @@ ansible-prod:
 
     volumes:
       ## ssh public key authentication
-      - ~/.ssh/your-juniper-private-key:/root/.ssh/id_rsa:Z,ro
+      - ~/.ssh/your-cisco-private-key:/root/.ssh/id_rsa:Z,ro
 
       - ./production-inventory:/inventory:Z,ro
 

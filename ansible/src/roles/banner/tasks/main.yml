@@ -14,7 +14,7 @@
   set_fact:
     banner:
       text: "{{ banner.text }}\n"
-      mode: "{{ banner.mode }}"
+      mode: "{{ banner_mode }}"
   when: 'not (banner.text | regex_search("\n$") | bool)'
 
 - name: Modify banner on device

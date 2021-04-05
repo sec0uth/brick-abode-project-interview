@@ -55,7 +55,7 @@ $ podman-compose build ansible-dev juniper
 
 **You must have followed the steps to build the docker images before continuing.**
 
-See issue #14 for more details about docker environment strategy.
+See issue [#14](https://github.com/sec0uth/brick-abode-project-interview/issues/14) for more details about docker environment strategy.
 
 The very basic beggining is to get a shell on the image.
 

@@ -6,4 +6,4 @@ ADD ./requirements.txt /tmp/ansible-requirements.txt
 RUN pip3 install -r /tmp/ansible-requirements.txt && \
         ansible-galaxy collection install cisco.ios
 
-CMD ["ansible-playbook", "inspect-routers.yml"]
+CMD ["ansible-playbook", "automate.yml"]

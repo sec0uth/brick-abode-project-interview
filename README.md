@@ -225,7 +225,7 @@ ansible-dev:
 
     volumes:
       ## ssh public key authentication
-      - ~/.ssh/your-juniper-private-key:/root/.ssh/id_rsa:Z,ro
+      - ~/.ssh/your-cisco-private-key:/root/.ssh/id_rsa:Z,ro
 
       - ./development-inventory:/inventory:Z,ro
 ```

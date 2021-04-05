@@ -1,6 +1,27 @@
 # Modify `running-config` with custom template file.
 
-- name: Modify current configuration with template file
+- name: Define path of configuration file
+  set_fact:
+    src_file: "{{ config.file | default(false, true) }}"
+
+- name: Ensure has a temporary file
+  ansible.builtin.tempfile:
+    state: file
+  register: config_tempfile
+  when: src_file is false
+
+- name: Write content to temporary file
+  ansible.builtin.copy:
+    content: "{{ config.content }}"
+    dest: "{{ config_tempfile.path }}"
+  when: src_file is false
+
+- name: Override source file to the temporary file
+  set_fact:
+    src_file: "{{ config_tempfile.path }}"
+  when: src_file is false
+
+- name: Modify current configuration with template
   ios_config:
-    src: "{{ config.file | mandatory }}"
+    src: "{{ src_file }}"
     save_when: "{{ config.save_when | default(default_save_when) }}"

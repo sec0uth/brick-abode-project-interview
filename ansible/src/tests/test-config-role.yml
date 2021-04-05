@@ -1,5 +1,7 @@
 ---
 
+## Test with config.file
+
 - name: Create temporary testing config file
   ansible.builtin.tempfile:
     state: file
@@ -25,6 +27,27 @@
   vars:
     config:
       file: "{{ config_file }}"
+      save_when: never
+
+- name: Ensure test user was created
+  ios_user:
+    name: "{{ test_user.name }}"
+    state: present
+
+
+## Test with config.content
+
+- name: Ensure test user is absent
+  ios_user:
+    name: "{{ test_user.name }}"
+    state: absent
+
+# provide testing vars
+- import_role:
+    name: config
+  vars:
+    config:
+      content: username {{ test_user.name }} nopassword
       save_when: never
 
 - name: Ensure test user was created

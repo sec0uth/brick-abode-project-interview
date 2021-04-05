@@ -1,7 +1,23 @@
 ---
 
-- name: Ensure user exists without a password
+- set_fact:
+    password: "{{ user.password | default(false, true) }}"
+
+- name: Ask user configured password
+  pause:
+    prompt: "{{ user.name }} password: "
+    echo: no
+  no_log: true
+  register: user_pass_input
+  when: password is false
+
+- set_fact:
+    password: "{{ user_pass_input.user_input }}"
+  when: password is false
+
+- name: Ensure user exists
   ios_user:
     name: "{{ user.name }}"
-    nopassword: true
+    configured_password: "{{ password }}"
+    update_password: "{{ always_update_password | bool | ternary('always', 'on_create')  }}"
     state: present

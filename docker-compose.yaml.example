@@ -42,6 +42,12 @@ services:
       ## Ansible inventory file
       # - ./production-inventory:/inventory:Z,ro
 
+      ## Ansible parameters file
+      # - ./production-config:/config.yml:Z,ro
+
+    environment:
+      ANSIBLE_VARS_FILE: /config.yml
+
   ansible-dev:
     extends:
       file: ./ansible/docker-compose.yaml

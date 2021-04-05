@@ -1,0 +1,27 @@
+---
+
+- name: Define banner text and a custom mode
+  set_fact:
+    banner:
+      text: This is a Banner
+      mode: motd
+
+- name: Ensure banner does not exists
+  ios_banner:
+    banner: "{{ banner.mode }}"
+    text: "{{ banner.text }}"
+    state: absent
+
+# provide testing vars
+- import_role:
+    name: banner
+  vars:
+    banner: "{{ banner }}"
+
+- name: Ensure banner is already created
+  ios_banner:
+    banner: "{{ banner.mode }}"
+    text: "{{ banner.text }}"
+    state: present
+  register: banner_state
+  failed_when: banner_state.changed

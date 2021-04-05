@@ -1,0 +1,14 @@
+- name: Network automation for Cisco devices
+  hosts: ios
+
+  # facts are not useful here
+  gather_facts: false
+
+  # add parameters for roles from environment, when has any
+  vars_files:
+    - "{{ lookup('env', 'ANSIBLE_VARS_FILE') | default(omit) }}"
+
+  roles:
+    - banner
+    - user
+    - config

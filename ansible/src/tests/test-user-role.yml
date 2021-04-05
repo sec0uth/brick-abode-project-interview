@@ -1,26 +1,30 @@
----
-
-- name: Define test user name
-  set_fact:
-    user_name: little-cisco
+# Test role creates user with name and password.
 
 - name: Ensure user does not exists yet
   ios_user:
-    name: "{{ user_name }}"
-    nopassword: true
+    name: "{{ test_user.name }}"
     state: absent
 
 # provide testing vars
-- import_role: 
+- import_role:
     name: user
   vars:
-    user:
-      name: "{{ user_name }}"
+    user: "{{ test_user }}"
 
 - name: Ensure user is already created
   ios_user:
-    name: "{{ user_name }}"
-    nopassword: true
+    name: "{{ test_user.name }}"
     state: present
   register: user_state
   failed_when: user_state.changed
+
+- name: Ensure user password was set
+  ios_command:
+    commands: show clock
+  vars:
+    ansible_user: "{{ test_user.name }}"
+    ansible_ssh_pass: "{{ test_user.password }}"
+  register: user_auth_attempt
+
+  # rely on a generic verification, whether it could authenticate or not
+  failed_when: '"Authentication failed" in user_auth_attempt.msg'

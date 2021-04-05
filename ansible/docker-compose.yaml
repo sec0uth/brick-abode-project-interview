@@ -17,4 +17,5 @@ services:
     volumes:
       - ./ansible/src:/ansible:Z,ro
     environment:
+      ANSIBLE_HOST_KEY_CHECKING: false
       ANSIBLE_INVENTORY: /inventory

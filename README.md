@@ -48,7 +48,7 @@ $ podman-compose build juniper-dev
 
 Or even exactly what you really need.
 ```bash
-$ podman-compose build ansible-dev juniper
+$ podman-compose build ansible-dev juniper-prod
 ```
 
 # Test & run
@@ -70,7 +70,7 @@ You have just tested the image and hopefully the tests have passed. As one can s
 
 ## Juniper
 
-What if you want to run Juniper? You may answer, just run `podman-compose run juniper`.
+What if you want to run Juniper production image? You may answer, just run `podman-compose run juniper-prod`.
 
 But...
 
@@ -95,7 +95,7 @@ The Juniper application needs a configuration file with the user arguments like 
 ```yml
 ...
 
-juniper:
+juniper-prod:
     ...
 
     volumes:
@@ -173,7 +173,7 @@ The preferred authentication mechanism is public key. When using them, juniper-c
 ```yml
 ...
 
-juniper:
+juniper-prod:
     ...
 
     volumes:
@@ -190,7 +190,7 @@ You should note that `/root/.ssh/id_rsa` is hard-coded, so do not worry if you a
 After you have set ssh and juniper-configuration file, you may be able to run the Juniper production image with the discussed command:
 
 ```bash
-$ podman-compose run juniper
+$ podman-compose run juniper-prod
 ```
 
 ## Ansible

@@ -1,7 +1,7 @@
 version: "2"
 
 services:
-  juniper:
+  juniper-prod:
     extends:
       file: ./juniper/docker-compose.yaml
       service: prod

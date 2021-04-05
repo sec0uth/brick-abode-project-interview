@@ -7,6 +7,9 @@
   - [Juniper](#juniper)
   - [Ansible](#ansible)
 
+# Target python version
+The default stable version on Bionic: `3.6.9`.
+
 # Building Docker Images
 You can start testing or running with provided docker environment. Containers were the chosen method to achieve the requirement of testing and runing on a `Ubuntu 18.04` system.
 

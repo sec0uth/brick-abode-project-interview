@@ -55,7 +55,9 @@ $ podman-compose build ansible-dev juniper
 
 **You must have followed the steps to build the docker images before continuing.**
 
-You must first understand how this docker compose thing works. The very basic beggining is to get a shell on the image.
+See issue #14 for more details about docker environment strategy.
+
+The very basic beggining is to get a shell on the image.
 
 ![image](https://user-images.githubusercontent.com/81310341/113460356-e184ac00-93ee-11eb-8ece-d8f9a93c765c.png)
 

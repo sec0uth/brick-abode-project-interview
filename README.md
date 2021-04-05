@@ -239,7 +239,9 @@ You can now successfully test Ansible using the command:
 $ podman-compose run ansible-dev
 ```
 
-For running the production image you need to configure an inventory and a configuration file. You can use the example configuration at `ansible-config.yml.example`.
+### Production
+
+You need to configure an inventory and a configuration file. You can use the example configuration at `ansible-config.yml.example`.
 
 As an example, the following configuration create two users:
 
@@ -275,7 +277,15 @@ ansible-prod:
       ANSIBLE_VARS_FILE: /config.yml
 ```
 
-You are now able to run Ansible production image as expected:
+You must scan the target host public key before running the image. In the development environment, it's disabled by default, but as a production policy the host key checking must be enabled. If you have not connected to the host yet, execute this command:
+
+```bash
+$ ssh-keyscan your-ssh-host >> ~/.ssh/known_hosts
+```
+
+And now of course, ensure the scanned key fingerprint is the right one.
+
+After those processes, you are now able to run Ansible production image as expected:
 
 ```bash
 $ podman-compose run ansible-prod

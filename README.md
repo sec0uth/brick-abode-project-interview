@@ -235,3 +235,49 @@ You can now test successfully test Ansible using the command:
 ```bash
 $ podman-compose run ansible-dev
 ```
+
+For running the production image you need to configure an inventory and a configuration file. You can use the example configuration at `ansible-config.yml.example` as a template.
+
+As an example, the following configuration create two users:
+
+```yml
+banner:
+  text: This is a Banner
+
+user:
+  name: little-cisco
+
+config: 
+  content: username test password 0 cisco
+```
+
+The password for user `little-cisco` is asked at runtime because it's missing in the file.
+
+Docker-compose file would like this:
+
+```yml
+...
+
+ansible-prod:
+    ...
+
+    volumes:
+      ## ssh public key authentication
+      - ~/.ssh/your-juniper-private-key:/root/.ssh/id_rsa:Z,ro
+
+      - ./production-inventory:/inventory:Z,ro
+
+      - ./ansible-config.yml:/config.yml:Z,ro
+    environment:
+      ANSIBLE_VARS_FILE: /config.yml
+```
+
+You are now able to run Ansible production image as expected:
+
+```bash
+$ podman-compose run ansible-prod
+```
+
+As result you get a banner a new user to login with:
+
+![image](https://user-images.githubusercontent.com/81310341/113585017-04d37500-9602-11eb-84da-ebcd0f730b0e.png)

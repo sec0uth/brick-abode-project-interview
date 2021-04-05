@@ -1,0 +1,15 @@
+---
+
+# template Ansible configuration
+
+banner:
+  text: This is a Banner
+  # mode: login
+
+user:
+  name: little-cisco
+  # password: secret-password
+
+config: 
+  file: template.j2
+  # content: username test password 0 cisco

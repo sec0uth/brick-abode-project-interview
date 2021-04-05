@@ -187,3 +187,6 @@ dev-venv/
 
 ## Juniper user config 
 juniper-config.yml
+
+## Ansible user config 
+ansible-config.yml

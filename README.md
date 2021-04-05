@@ -230,13 +230,13 @@ ansible-dev:
       - ./development-inventory:/inventory:Z,ro
 ```
 
-You can now test successfully test Ansible using the command:
+You can now successfully test Ansible using the command:
 
 ```bash
 $ podman-compose run ansible-dev
 ```
 
-For running the production image you need to configure an inventory and a configuration file. You can use the example configuration at `ansible-config.yml.example` as a template.
+For running the production image you need to configure an inventory and a configuration file. You can use the example configuration at `ansible-config.yml.example`.
 
 As an example, the following configuration create two users:
 
